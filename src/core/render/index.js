@@ -94,25 +94,38 @@ function _renderLabels({ config, svg, centerTx, r }) {
   const tickData = configureTickData(config)
   const scale = configureScale(config)
   const range = config.maxAngle - config.minAngle
+  const customSegmentStops = config.customSegmentStops
+  const customSegmentStopLabels = config.customSegmentStopLabels
+  let textFormatter = config.labelFormat
+
+  if (customSegmentStopLabels && customSegmentStopLabels.length) {
+    if (customSegmentStopLabels.length < customSegmentStops.length) {
+      throw new Error('`customSegmentStopLabels.length` must match or exceed `customSegmentStops.length`')
+    }
+
+    textFormatter = function(data, index) {
+      return customSegmentStopLabels[index]
+    }
+  }
 
   let lg = svg
     .append("g")
     .attr("class", "label")
     .attr("transform", centerTx)
-
+  
   lg.selectAll("text")
     .data(ticks)
     .enter()
     .append("text")
     .attr("transform", (d, i) => {
       const ratio =
-        config.customSegmentStops.length === 0
+        customSegmentStops.length === 0
           ? scale(d)
           : sumArrayTill(tickData, i)
       const newAngle = config.minAngle + ratio * range
       return `rotate(${newAngle}) translate(0, ${config.labelInset - r})`
     })
-    .text(config.labelFormat)
+    .text(textFormatter)
     // add class for text label
     .attr("class", "segment-value")
     // styling stuffs

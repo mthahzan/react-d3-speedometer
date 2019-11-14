@@ -98,6 +98,8 @@ ReactSpeedometer.propTypes = {
   maxSegmentLabels: PropTypes.number,
   // custom segment points to create unequal segments
   customSegmentStops: PropTypes.array,
+  // Custom segment labels. Requires `customSegmentStops` to be defined and to match it's length
+  customSegmentStopLabels: PropTypes.array,
 
   // color strings
   needleColor: PropTypes.string.isRequired,
